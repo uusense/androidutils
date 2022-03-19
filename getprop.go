@@ -14,9 +14,28 @@ import (
 
 const defaultShellTimeout = 10 * time.Second
 
+var (
+	isAndroid    = true
+	deviceSerial = ""
+)
+
+func Initz(serial string, is bool) {
+	isAndroid = is
+	deviceSerial = serial
+}
+
 // run shell with default timeout
 func runShell(args ...string) (out string, err error) {
-	cmd := exec.Command("sh", "-c", shellquote.Join(args...))
+	prefix := []string{}
+	if !isAndroid {
+		if deviceSerial != "" {
+			prefix = []string{"adb", "-s", deviceSerial, "shell"}
+		} else {
+			prefix = []string{"adb", "shell"}
+		}
+	}
+	sh := append(prefix, args...)
+	cmd := exec.Command("sh", "-c", shellquote.Join(sh...))
 	timer := time.AfterFunc(defaultShellTimeout, func() {
 		cmd.Process.Kill()
 	})

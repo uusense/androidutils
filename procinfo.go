@@ -10,7 +10,16 @@ import (
 
 // MemoryInfo read from /proc/meminfo, unit kB
 func MemoryInfo() (info map[string]int, err error) {
-	data, err := ioutil.ReadFile("/proc/meminfo")
+	var (
+		mem  string
+		data []byte
+	)
+	if !isAndroid {
+		mem, err = runShell("cat", "/proc/meminfo")
+		data = []byte(mem)
+	} else {
+		data, err = ioutil.ReadFile("/proc/meminfo")
+	}
 	if err != nil {
 		return
 	}
@@ -40,7 +49,16 @@ type Processor struct {
 
 // ProcessorInfo read from /proc/cpuinfo
 func ProcessorInfo() (hardware string, processors []Processor, err error) {
-	data, err := ioutil.ReadFile("/proc/cpuinfo")
+	var (
+		cpu  string
+		data []byte
+	)
+	if !isAndroid {
+		cpu, err = runShell("cat", "/proc/cpuinfo")
+		data = []byte(cpu)
+	} else {
+		data, err = ioutil.ReadFile("/proc/cpuinfo")
+	}
 	if err != nil {
 		return
 	}
