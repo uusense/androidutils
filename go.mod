@@ -1,4 +1,4 @@
-module github.com/openatx/androidutils
+module github.com/uusense/androidutils
 
 go 1.14
 
